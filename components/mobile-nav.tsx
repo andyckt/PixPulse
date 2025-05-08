@@ -2,7 +2,7 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
-import { Compass, Home, MessageCircle, Plus, SnowflakeIcon as Crystal, User } from "lucide-react"
+import { Compass, Home, MessageCircle, Plus, User } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
