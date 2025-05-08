@@ -2,360 +2,420 @@
 
 import { useState } from "react"
 import Image from "next/image"
-import { Dialog, DialogContent } from "@/components/ui/dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Separator } from "@/components/ui/separator"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { 
+  Bookmark, 
+  FolderClosed, 
   Heart, 
   MessageCircle, 
-  Bookmark, 
-  Share2, 
   MoreHorizontal, 
   Send,
-  Calendar,
-  Play,
-  MapPin,
-  Hexagon
+  Share2
 } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Input } from "@/components/ui/input"
+import { toast } from "sonner"
+
+// Define interfaces for our data types
+interface Author {
+  name: string;
+  username: string;
+  avatar: string;
+}
+
+interface PostMeta {
+  likes: number;
+  comments: number;
+  saved: number;
+}
+
+interface Post {
+  id: string;
+  image: string;
+  caption: string;
+  savedDate: string;
+  collections: string[];
+  author: Author;
+  meta: PostMeta;
+  type: 'photo' | 'video' | 'carousel';
+}
 
 interface Comment {
-  id: string
-  user: {
-    name: string
-    username: string
-    avatar: string
-    isVerified?: boolean
-  }
-  content: string
-  likes: number
-  timestamp: string
-  isLiked?: boolean
+  id: string;
+  author: Author;
+  content: string;
+  timestamp: string;
+  likes: number;
+  isLiked: boolean;
+  replies?: Comment[];
 }
 
-interface PostDetailProps {
-  post?: {
-    id: number
-    image: string
-    likes: number
-    comments: number
-    isVideo?: boolean
-    isMulti?: boolean
-    isSaved?: boolean
-    date?: string
-    location?: string
-    caption?: string
-    user?: {
-      name: string
-      username: string
-      avatar: string
-      isVerified?: boolean
-    }
-  } | null
-  open: boolean
-  onOpenChange: (open: boolean) => void
+interface PostDetailModalProps {
+  post: Post | null;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
-export function PostDetailModal({ post, open, onOpenChange }: PostDetailProps) {
-  const [liked, setLiked] = useState(false)
-  const [saved, setSaved] = useState(post?.isSaved || false)
-  const [commentText, setCommentText] = useState("")
-  const [postComments, setPostComments] = useState<Comment[]>([
+export function PostDetailModal({ post, open, onOpenChange }: PostDetailModalProps) {
+  const [activeTab, setActiveTab] = useState("comments")
+  const [commentInput, setCommentInput] = useState("")
+  const [isLiked, setIsLiked] = useState(false)
+  const [likeCount, setLikeCount] = useState(post?.meta?.likes || 0)
+  
+  // Mock comments data
+  const comments: Comment[] = post ? [
     {
-      id: "comment-1",
-      user: {
-        name: "Sarah Johnson",
-        username: "sarahj",
-        avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&q=80&fit=crop",
-        isVerified: true
+      id: "comment1",
+      author: {
+        name: "Alex Johnson",
+        username: "alexj",
+        avatar: "https://images.unsplash.com/photo-1568602471122-7832951cc4c5?w=80&h=80&q=80&fit=crop"
       },
-      content: "This is absolutely beautiful! Where was this taken?",
+      content: "This is absolutely stunning! Where exactly was this taken?",
+      timestamp: "2d ago",
       likes: 24,
-      timestamp: "2h ago",
       isLiked: false
     },
     {
-      id: "comment-2",
-      user: {
-        name: "Mike Chen",
-        username: "mikechen",
-        avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&q=80&fit=crop"
+      id: "comment2", 
+      author: {
+        name: "Sophia Chen",
+        username: "sophiac",
+        avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&h=80&q=80&fit=crop"
       },
-      content: "Amazing shot! The composition is perfect 📸",
-      likes: 15,
-      timestamp: "5h ago",
-      isLiked: true
+      content: "I need to add this place to my travel bucket list! The colors are just incredible 😍",
+      timestamp: "1d ago",
+      likes: 18,
+      isLiked: true,
+      replies: [
+        {
+          id: "reply1",
+          author: {
+            name: post?.author?.name || "Author",
+            username: post?.author?.username || "username",
+            avatar: post?.author?.avatar || ""
+          },
+          content: "Thank you! It's even more beautiful in person, believe it or not!",
+          timestamp: "20h ago",
+          likes: 5,
+          isLiked: false
+        }
+      ]
     },
     {
-      id: "comment-3",
-      user: {
-        name: "Emily Rodriguez",
-        username: "emilyrod",
-        avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&q=80&fit=crop"
+      id: "comment3",
+      author: {
+        name: "Marco Rivera",
+        username: "marco_r",
+        avatar: "https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=80&h=80&q=80&fit=crop"
       },
-      content: "I need to visit this place soon! Added to my bucket list ✨",
+      content: "The lighting in this shot is absolutely perfect. What time of day did you take this?",
+      timestamp: "14h ago",
       likes: 9,
-      timestamp: "1d ago",
       isLiked: false
     }
-  ])
+  ] : []
+  
+  // Handle like functionality
+  const handleLike = () => {
+    if (isLiked) {
+      setLikeCount((prev: number) => prev - 1)
+    } else {
+      setLikeCount((prev: number) => prev + 1)
+    }
+    setIsLiked(!isLiked)
+  }
+  
+  // Handle comment submission
+  const handleSubmitComment = () => {
+    if (commentInput.trim()) {
+      toast.success("Comment added", {
+        position: "bottom-center",
+      })
+      setCommentInput("")
+    }
+  }
+  
+  // Handle comment like
+  const handleCommentLike = (commentId: string) => {
+    // This would update the comment likes in a real app
+    toast.success("Comment liked", {
+      position: "bottom-center",
+    })
+  }
   
   if (!post) return null
   
-  const handleLikeToggle = () => {
-    setLiked(!liked)
-  }
-  
-  const handleSaveToggle = () => {
-    setSaved(!saved)
-  }
-  
-  const handleCommentSubmit = () => {
-    if (!commentText.trim()) return
-    
-    const newComment: Comment = {
-      id: `comment-${Date.now()}`,
-      user: {
-        name: "John Doe",
-        username: "johndoe",
-        avatar: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=100&h=100&q=80&fit=crop"
-      },
-      content: commentText.trim(),
-      likes: 0,
-      timestamp: "Just now",
-      isLiked: false
-    }
-    
-    setPostComments([newComment, ...postComments])
-    setCommentText("")
-  }
-  
-  const handleCommentLike = (commentId: string) => {
-    setPostComments(
-      postComments.map(comment => 
-        comment.id === commentId 
-          ? { 
-              ...comment, 
-              isLiked: !comment.isLiked,
-              likes: comment.isLiked ? comment.likes - 1 : comment.likes + 1
-            }
-          : comment
-      )
-    )
-  }
-  
-  const totalLikes = liked ? post.likes + 1 : post.likes
-
-  const formatNumber = (num: number) => {
-    if (num >= 1000000) {
-      return (num / 1000000).toFixed(1) + 'M';
-    } else if (num >= 1000) {
-      return (num / 1000).toFixed(1) + 'K';
-    }
-    return num.toString();
-  }
-  
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="p-0 max-w-5xl w-[calc(100%-2rem)] rounded-lg overflow-hidden">
-        <div className="flex flex-col md:flex-row h-[80vh] md:h-[calc(100vh-8rem)]">
-          {/* Image Section */}
-          <div className="md:w-3/5 relative bg-black flex items-center">
-            {post.isVideo ? (
-              <div className="relative w-full h-full">
-                <Image 
-                  src={post.image} 
-                  alt="Post image" 
-                  fill 
-                  className="object-contain"
-                />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="bg-black/50 rounded-full p-4">
-                    <Play className="h-8 w-8 text-white fill-white" />
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <Image 
-                src={post.image} 
-                alt="Post image" 
-                fill 
-                className="object-contain"
-              />
-            )}
+      <DialogContent className="sm:max-w-4xl max-h-[95vh] p-0 overflow-hidden">
+        <div className="flex flex-col md:flex-row h-full max-h-[calc(95vh-2rem)]">
+          {/* Left side - Image */}
+          <div className="relative md:w-1/2 h-[300px] md:h-auto bg-black flex items-center justify-center overflow-hidden">
+            <Image
+              src={post.image}
+              alt={post.caption}
+              fill
+              className="object-contain"
+            />
           </div>
           
-          {/* Comments Section */}
-          <div className="md:w-2/5 flex flex-col border-l">
-            {/* Post Header */}
-            <div className="flex items-center justify-between p-4 border-b">
-              <div className="flex items-center gap-3">
+          {/* Right side - Content */}
+          <div className="md:w-1/2 flex flex-col h-full">
+            {/* Header - Post author */}
+            <div className="p-4 border-b flex items-center justify-between">
+              <div className="flex items-center gap-2">
                 <Avatar className="h-8 w-8">
-                  <AvatarImage 
-                    src={post.user?.avatar || "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=100&h=100&q=80&fit=crop"} 
-                    alt={post.user?.name || "User"} 
-                  />
-                  <AvatarFallback>U</AvatarFallback>
+                  <AvatarImage src={post.author.avatar} alt={post.author.name} />
+                  <AvatarFallback>{post.author.name.substring(0, 2)}</AvatarFallback>
                 </Avatar>
                 <div>
-                  <div className="flex items-center gap-1">
-                    <p className="text-sm font-medium">
-                      {post.user?.username || "johndoe"}
-                    </p>
-                    {post.user?.isVerified && (
-                      <Hexagon className="h-3.5 w-3.5 text-blue-500 fill-blue-100" />
-                    )}
-                  </div>
-                  {post.location && (
-                    <div className="flex items-center text-xs text-muted-foreground">
-                      <MapPin className="h-3 w-3 mr-1" />
-                      <span>{post.location}</span>
-                    </div>
-                  )}
+                  <p className="text-sm font-medium">{post.author.name}</p>
+                  <p className="text-xs text-muted-foreground">@{post.author.username}</p>
                 </div>
               </div>
-              <Button variant="ghost" size="icon">
-                <MoreHorizontal className="h-5 w-5" />
-              </Button>
+              
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem>
+                    Follow {post.author.name}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    Share post
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>
+                    Report post
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
             
-            {/* Comments Area */}
-            <ScrollArea className="flex-1 p-4">
-              {/* Caption */}
-              {(post.caption || post.date) && (
-                <div className="flex gap-3 mb-6">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage 
-                      src={post.user?.avatar || "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=100&h=100&q=80&fit=crop"} 
-                      alt={post.user?.name || "User"} 
-                    />
-                    <AvatarFallback>U</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="text-sm mb-1">
-                      <span className="font-medium">{post.user?.username || "johndoe"}</span>{" "}
-                      {post.caption || "Beautiful sunset at the beach today! #nature #photography"}
-                    </p>
-                    {post.date && (
-                      <div className="flex items-center text-xs text-muted-foreground">
-                        <Calendar className="h-3 w-3 mr-1" />
-                        <span>{post.date}</span>
+            {/* Tabs */}
+            <Tabs defaultValue="comments" value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
+              <TabsList className="grid grid-cols-2 w-full rounded-none border-b">
+                <TabsTrigger value="comments">Comments</TabsTrigger>
+                <TabsTrigger value="details">Details</TabsTrigger>
+              </TabsList>
+              
+              {/* Comments Tab */}
+              <TabsContent value="comments" className="flex-1 flex flex-col p-0">
+                <ScrollArea className="flex-1">
+                  <div className="p-4 space-y-4">
+                    <p className="text-sm">{post.caption}</p>
+                    
+                    <div className="pt-2 pb-4 border-b">
+                      <div className="flex items-center gap-1.5 text-muted-foreground text-xs">
+                        <span>Posted {post.savedDate}</span>
+                        <span>•</span>
+                        <span>{post.meta.comments} comments</span>
+                        <span>•</span>
+                        <span>{likeCount.toLocaleString()} likes</span>
                       </div>
+                    </div>
+                    
+                    {comments.map(comment => (
+                      <div key={comment.id} className="space-y-2">
+                        <div className="flex gap-2">
+                          <Avatar className="h-7 w-7 flex-shrink-0">
+                            <AvatarImage src={comment.author.avatar} alt={comment.author.name} />
+                            <AvatarFallback>{comment.author.name.substring(0, 2)}</AvatarFallback>
+                          </Avatar>
+                          <div className="space-y-1 flex-1">
+                            <div className="bg-muted/50 rounded-lg p-2">
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <span className="text-sm font-medium">{comment.author.name}</span>
+                                  <span className="text-xs text-muted-foreground ml-1">@{comment.author.username}</span>
+                                </div>
+                                <span className="text-xs text-muted-foreground">{comment.timestamp}</span>
+                              </div>
+                              <p className="text-sm mt-1">{comment.content}</p>
+                            </div>
+                            
+                            <div className="flex items-center gap-4 text-xs pl-2">
+                              <button 
+                                className="text-muted-foreground hover:text-foreground transition-colors"
+                                onClick={() => handleCommentLike(comment.id)}
+                              >
+                                {comment.likes} likes
+                              </button>
+                              <button className="text-muted-foreground hover:text-foreground transition-colors">
+                                Reply
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {/* Comment replies */}
+                        {comment.replies && comment.replies.length > 0 && (
+                          <div className="pl-8">
+                            {comment.replies.map(reply => (
+                              <div key={reply.id} className="flex gap-2">
+                                <Avatar className="h-6 w-6 flex-shrink-0">
+                                  <AvatarImage src={reply.author.avatar} alt={reply.author.name} />
+                                  <AvatarFallback>{reply.author.name.substring(0, 2)}</AvatarFallback>
+                                </Avatar>
+                                <div className="space-y-1 flex-1">
+                                  <div className="bg-muted/30 rounded-lg p-2">
+                                    <div className="flex items-center justify-between">
+                                      <div>
+                                        <span className="text-sm font-medium">{reply.author.name}</span>
+                                        <span className="text-xs text-muted-foreground ml-1">@{reply.author.username}</span>
+                                      </div>
+                                      <span className="text-xs text-muted-foreground">{reply.timestamp}</span>
+                                    </div>
+                                    <p className="text-sm mt-1">{reply.content}</p>
+                                  </div>
+                                  
+                                  <div className="flex items-center gap-4 text-xs pl-2">
+                                    <button 
+                                      className="text-muted-foreground hover:text-foreground transition-colors"
+                                      onClick={() => handleCommentLike(reply.id)}
+                                    >
+                                      {reply.likes} likes
+                                    </button>
+                                    <button className="text-muted-foreground hover:text-foreground transition-colors">
+                                      Reply
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </ScrollArea>
+                
+                {/* Comment input area */}
+                <div className="p-3 border-t flex gap-2 items-center">
+                  <Input 
+                    placeholder="Add a comment..." 
+                    value={commentInput}
+                    onChange={(e) => setCommentInput(e.target.value)}
+                    className="flex-1"
+                  />
+                  <Button 
+                    size="sm" 
+                    disabled={!commentInput.trim()}
+                    onClick={handleSubmitComment}
+                  >
+                    <Send className="h-4 w-4" />
+                  </Button>
+                </div>
+              </TabsContent>
+              
+              {/* Details Tab */}
+              <TabsContent value="details" className="p-4 space-y-4 flex-1 overflow-auto">
+                <div>
+                  <h3 className="text-sm font-medium mb-2">Saved in Collections</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {post.collections && post.collections.length > 0 ? (
+                      post.collections.map(collectionId => (
+                        <Badge 
+                          key={collectionId} 
+                          variant="outline"
+                        >
+                          <FolderClosed className="h-3 w-3 mr-1" />
+                          {collectionId}
+                        </Badge>
+                      ))
+                    ) : (
+                      <p className="text-sm text-muted-foreground">Not saved in any collections</p>
                     )}
                   </div>
                 </div>
-              )}
-              
-              {/* Comments List */}
-              <div className="space-y-4">
-                {postComments.map(comment => (
-                  <div key={comment.id} className="flex gap-3">
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage src={comment.user.avatar} alt={comment.user.name} />
-                      <AvatarFallback>{comment.user.name.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1">
-                      <div className="flex flex-wrap items-start justify-between">
-                        <div>
-                          <p className="text-sm">
-                            <span className="font-medium">
-                              {comment.user.username}
-                            </span>{" "}
-                            {comment.content}
-                          </p>
-                          <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
-                            <span>{comment.timestamp}</span>
-                            {comment.likes > 0 && (
-                              <span>{comment.likes} likes</span>
-                            )}
-                            <button className="hover:text-foreground transition-colors">
-                              Reply
-                            </button>
-                          </div>
-                        </div>
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          className="h-8 w-8 text-muted-foreground"
-                          onClick={() => handleCommentLike(comment.id)}
-                        >
-                          <Heart className={`h-3.5 w-3.5 ${comment.isLiked ? "fill-red-500 text-red-500" : ""}`} />
-                        </Button>
-                      </div>
+                
+                <div>
+                  <h3 className="text-sm font-medium mb-2">Engagement</h3>
+                  <div className="grid grid-cols-3 gap-2">
+                    <div className="border rounded-md p-3 text-center">
+                      <Heart className="h-5 w-5 mx-auto mb-1" />
+                      <p className="text-lg font-medium">{likeCount.toLocaleString()}</p>
+                      <p className="text-xs text-muted-foreground">Likes</p>
+                    </div>
+                    <div className="border rounded-md p-3 text-center">
+                      <MessageCircle className="h-5 w-5 mx-auto mb-1" />
+                      <p className="text-lg font-medium">{post.meta.comments.toLocaleString()}</p>
+                      <p className="text-xs text-muted-foreground">Comments</p>
+                    </div>
+                    <div className="border rounded-md p-3 text-center">
+                      <Bookmark className="h-5 w-5 mx-auto mb-1" />
+                      <p className="text-lg font-medium">{post.meta.saved.toLocaleString()}</p>
+                      <p className="text-xs text-muted-foreground">Saves</p>
                     </div>
                   </div>
-                ))}
-              </div>
-            </ScrollArea>
-            
-            {/* Actions */}
-            <div className="p-4 border-t">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    onClick={handleLikeToggle}
-                  >
-                    <Heart className={`h-6 w-6 ${liked ? "fill-red-500 text-red-500" : ""}`} />
-                    <span className="sr-only">Like</span>
-                  </Button>
-                  <Button variant="ghost" size="icon">
-                    <MessageCircle className="h-6 w-6" />
-                    <span className="sr-only">Comment</span>
-                  </Button>
-                  <Button variant="ghost" size="icon">
-                    <Share2 className="h-6 w-6" />
-                    <span className="sr-only">Share</span>
-                  </Button>
                 </div>
+                
+                <div>
+                  <h3 className="text-sm font-medium mb-2">Post Information</h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Post type:</span>
+                      <span className="font-medium capitalize">{post.type}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Saved on:</span>
+                      <span className="font-medium">{post.savedDate}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Account type:</span>
+                      <span className="font-medium">Professional</span>
+                    </div>
+                  </div>
+                </div>
+              </TabsContent>
+            </Tabs>
+            
+            {/* Footer - Action buttons */}
+            <div className="border-t p-3 flex items-center justify-between">
+              <div className="flex items-center gap-1">
                 <Button 
                   variant="ghost" 
                   size="icon"
-                  onClick={handleSaveToggle}
+                  onClick={handleLike}
+                  className={isLiked ? "text-red-500" : ""}
                 >
-                  <Bookmark className={`h-6 w-6 ${saved ? "fill-current" : ""}`} />
-                  <span className="sr-only">Save</span>
+                  <Heart className={`h-5 w-5 ${isLiked ? "fill-current" : ""}`} />
+                </Button>
+                <Button variant="ghost" size="icon">
+                  <MessageCircle className="h-5 w-5" />
+                </Button>
+                <Button variant="ghost" size="icon">
+                  <Share2 className="h-5 w-5" />
                 </Button>
               </div>
               
-              <div className="mb-4">
-                <p className="font-semibold">{formatNumber(totalLikes)} likes</p>
-              </div>
-              
-              <div className="flex items-center gap-3">
-                <Avatar className="h-8 w-8">
-                  <AvatarImage 
-                    src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=100&h=100&q=80&fit=crop" 
-                    alt="Your avatar" 
-                  />
-                  <AvatarFallback>JD</AvatarFallback>
-                </Avatar>
-                <div className="flex-1 flex items-center">
-                  <Textarea
-                    placeholder="Add a comment..."
-                    value={commentText}
-                    onChange={(e) => setCommentText(e.target.value)}
-                    className="min-h-0 h-10 resize-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 py-2.5"
-                  />
-                  {commentText.trim() && (
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="text-primary font-semibold px-3"
-                      onClick={handleCommentSubmit}
-                    >
-                      Post
-                    </Button>
-                  )}
-                </div>
-              </div>
+              <Button variant="ghost" size="icon">
+                <Bookmark className="h-5 w-5" />
+              </Button>
             </div>
           </div>
         </div>
       </DialogContent>
     </Dialog>
-  );
+  )
 } 
