@@ -12,7 +12,7 @@ import {
   Bookmark,
   Camera, 
   Compass, 
-  Fire, 
+  Flame, 
   Hash, 
   Heart, 
   ImageIcon, 
@@ -44,7 +44,7 @@ export default function ExplorePage() {
     { id: "all", name: "All", icon: <Compass className="h-4 w-4" /> },
     { id: "photography", name: "Photography", icon: <Camera className="h-4 w-4" /> },
     { id: "travel", name: "Travel", icon: <MapPin className="h-4 w-4" /> },
-    { id: "food", name: "Food", icon: <Fire className="h-4 w-4" /> },
+    { id: "food", name: "Food", icon: <Flame className="h-4 w-4" /> },
     { id: "music", name: "Music", icon: <Music className="h-4 w-4" /> },
     { id: "art", name: "Art", icon: <PenTool className="h-4 w-4" /> },
     { id: "books", name: "Books", icon: <Book className="h-4 w-4" /> },
@@ -191,7 +191,7 @@ export default function ExplorePage() {
     : exploreContent.filter(item => item.category === activeCategory)
 
   // Handle search
-  const handleSearch = (e) => {
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (searchQuery.trim()) {
       toast.success("Searching for: " + searchQuery, {
@@ -202,7 +202,7 @@ export default function ExplorePage() {
   }
 
   // Handle follow
-  const handleFollow = (creatorId) => {
+  const handleFollow = (creatorId: string) => {
     toast.success("Creator followed", {
       description: "You're now following this creator",
       position: "bottom-right",
@@ -210,7 +210,7 @@ export default function ExplorePage() {
   }
 
   // Handle bookmark
-  const handleBookmark = (contentId) => {
+  const handleBookmark = (contentId: string) => {
     toast.success("Saved to collections", {
       position: "bottom-right",
     })
@@ -453,5 +453,4 @@ export default function ExplorePage() {
       <MobileNav />
     </div>
   )
-}
-
+} 

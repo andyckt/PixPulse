@@ -113,7 +113,7 @@ export function PostCard({ post }: PostCardProps) {
       author: {
         name: "You",
         username: "username",
-        avatar: "/placeholder.svg?height=40&width=40&text=YP",
+        avatar: "https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=1000&auto=format&fit=crop",
       },
       content,
       timestamp: "Just now",
@@ -144,7 +144,7 @@ export function PostCard({ post }: PostCardProps) {
       <div className="p-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Avatar className="w-10 h-10">
-            <AvatarImage src={post.author.avatar} alt={post.author.name} />
+            <AvatarImage src={post.author.avatar} alt={post.author.name} className="object-cover" />
             <AvatarFallback>{post.author.name.substring(0, 2)}</AvatarFallback>
           </Avatar>
           <div>
@@ -244,7 +244,7 @@ export function PostCard({ post }: PostCardProps) {
                   {comments.map((comment) => (
                     <div key={comment.id} className="flex gap-2">
                       <Avatar className="h-6 w-6">
-                        <AvatarImage src={comment.author.avatar} alt={comment.author.name} />
+                        <AvatarImage src={comment.author.avatar} alt={comment.author.name} className="object-cover" />
                         <AvatarFallback>{comment.author.name.substring(0, 2)}</AvatarFallback>
                       </Avatar>
                       <div className="flex-1">

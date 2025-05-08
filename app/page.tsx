@@ -381,7 +381,7 @@ export default function Home() {
                         <div className={`${story.hasUnviewed ? 'bg-gradient-to-tr from-pink-500 via-red-500 to-yellow-500' : 'bg-muted'} rounded-full p-[2px]`}>
                           <div className="bg-background rounded-full p-[2px]">
                             <Avatar className={`w-16 h-16 ${viewingStory === story.id ? 'ring-2 ring-primary' : ''}`}>
-                              <AvatarImage src={story.user.avatar} alt={story.user.name} />
+                              <AvatarImage src={story.user.avatar} alt={story.user.name} className="object-cover" />
                               <AvatarFallback>{story.user.name.substring(0, 2)}</AvatarFallback>
                             </Avatar>
                           </div>
@@ -417,8 +417,8 @@ export default function Home() {
             <Card className="mb-6">
               <CardContent className="p-4">
                 <div className="flex items-center gap-3 mb-3">
-                  <Avatar className="w-10 h-10">
-                    <AvatarImage src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3" alt="Your profile" />
+                  <Avatar className="h-9 w-9">
+                    <AvatarImage src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3" alt="Your profile" className="object-cover" />
                     <AvatarFallback>YP</AvatarFallback>
                   </Avatar>
                   <div className="flex-1">
@@ -541,7 +541,7 @@ export default function Home() {
         <div className="flex flex-col items-center space-y-4">
           <div className="relative">
             <Avatar className="w-24 h-24">
-              <AvatarImage src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3" alt="Your profile" />
+              <AvatarImage src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3" alt="Your profile" className="object-cover" />
               <AvatarFallback>YP</AvatarFallback>
             </Avatar>
             <div className="absolute -top-2 -right-2 text-yellow-400">
@@ -587,8 +587,8 @@ export default function Home() {
           {suggestedAccounts.map((account) => (
             <div key={account.id} className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Avatar className="w-8 h-8">
-                  <AvatarImage src={account.avatar} alt={account.name} />
+                <Avatar className="h-9 w-9">
+                  <AvatarImage src={account.avatar} alt={account.name} className="object-cover" />
                   <AvatarFallback>{account.name.substring(0, 2)}</AvatarFallback>
                 </Avatar>
                 <div className="text-sm">

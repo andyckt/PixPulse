@@ -55,7 +55,7 @@ export function CommentWindow({
         <div className="flex gap-3">
           {showAvatar && (
             <Avatar className="h-8 w-8">
-              <AvatarImage src="/placeholder.svg?height=32&width=32" alt="Your avatar" />
+              <AvatarImage src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=1000&auto=format&fit=crop" alt="Your avatar" className="object-cover" />
               <AvatarFallback>YP</AvatarFallback>
             </Avatar>
           )}

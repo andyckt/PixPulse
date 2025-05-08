@@ -31,7 +31,7 @@ export default function Sidebar() {
 
   const navItems = [
     { name: "Safari", path: "/", icon: <Home className="mr-2 h-5 w-5" /> },
-    { name: "Explore", path: "/voices", icon: <Compass className="mr-2 h-5 w-5" /> },
+    { name: "Explore", path: "/explore", icon: <Compass className="mr-2 h-5 w-5" /> },
     { name: "Messages", path: "/messages", icon: <MessageCircle className="mr-2 h-5 w-5" /> },
     { name: "Friends", path: "/friends", icon: <Users className="mr-2 h-5 w-5" /> },
     { name: "Crystal Ball", path: "/crystal-ball", icon: <Crystal className="mr-2 h-5 w-5" /> },
@@ -154,7 +154,7 @@ export default function Sidebar() {
               isCollapsed && "flex-col"
             )}>
               <Avatar className="h-8 w-8 border">
-                <AvatarImage src="/placeholder.svg?height=32&width=32" alt="Username" />
+                <AvatarImage src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=1000&auto=format&fit=crop" alt="Username" className="object-cover" />
                 <AvatarFallback>UN</AvatarFallback>
               </Avatar>
               
