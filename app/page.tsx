@@ -632,7 +632,7 @@ export default function Home() {
             <Link href="#" className="hover:underline">Developers</Link>
             <Link href="#" className="hover:underline">Settings</Link>
           </div>
-          <p className="text-xs text-muted-foreground mt-2">© 2024 PixPulse</p>
+          <p className="text-xs text-muted-foreground mt-2">© 2025 PixPulse</p>
         </div>
       </div>
 
