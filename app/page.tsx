@@ -55,20 +55,20 @@ export default function Home() {
   
   // Sample suggested accounts
   const suggestedAccounts = [
-    { id: "user1", name: "Jane Smith", username: "jane_travels", avatar: "/placeholder.svg?height=40&width=40&text=JS", reason: "Popular in travel" },
-    { id: "user2", name: "Mark Wilson", username: "mark_photos", avatar: "/placeholder.svg?height=40&width=40&text=MW", reason: "Photographer you might like" },
-    { id: "user3", name: "Aria Lee", username: "aria_music", avatar: "/placeholder.svg?height=40&width=40&text=AL", reason: "Musician" }
+    { id: "user1", name: "Jane Smith", username: "jane_travels", avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3", reason: "Popular in travel" },
+    { id: "user2", name: "Mark Wilson", username: "mark_photos", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3", reason: "Photographer you might like" },
+    { id: "user3", name: "Aria Lee", username: "aria_music", avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3", reason: "Musician" }
   ]
   
   // Enhanced sample story data
   const stories = [
-    { id: "story1", user: { name: "Your Story", username: "you", avatar: "/placeholder.svg?height=64&width=64&text=YP" }, hasUnviewed: false, isYourStory: true },
-    { id: "story2", user: { name: "Alex Johnson", username: "alex_j", avatar: "/placeholder.svg?height=64&width=64&text=AJ" }, hasUnviewed: true, type: "friend" },
-    { id: "story3", user: { name: "Emma Watson", username: "emma_official", avatar: "/placeholder.svg?height=64&width=64&text=EW" }, hasUnviewed: true, type: "celebrity" },
-    { id: "story4", user: { name: "DJ Khaled", username: "djkhaled", avatar: "/placeholder.svg?height=64&width=64&text=DJ" }, hasUnviewed: true, type: "musician" },
-    { id: "story5", user: { name: "Jessica Chen", username: "jess_chen", avatar: "/placeholder.svg?height=64&width=64&text=JC" }, hasUnviewed: false, type: "friend" },
-    { id: "story6", user: { name: "Travelista", username: "travel_mag", avatar: "/placeholder.svg?height=64&width=64&text=TM" }, hasUnviewed: true, type: "brand" },
-    { id: "story7", user: { name: "Food Network", username: "food_net", avatar: "/placeholder.svg?height=64&width=64&text=FN" }, hasUnviewed: true, type: "brand" }
+    { id: "story1", user: { name: "Your Story", username: "you", avatar: "https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3" }, hasUnviewed: false, isYourStory: true },
+    { id: "story2", user: { name: "Alex Johnson", username: "alex_j", avatar: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3" }, hasUnviewed: true, type: "friend" },
+    { id: "story3", user: { name: "Emma Watson", username: "emma_official", avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3" }, hasUnviewed: true, type: "celebrity" },
+    { id: "story4", user: { name: "DJ Khaled", username: "djkhaled", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3" }, hasUnviewed: true, type: "musician" },
+    { id: "story5", user: { name: "Jessica Chen", username: "jess_chen", avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3" }, hasUnviewed: false, type: "friend" },
+    { id: "story6", user: { name: "Travelista", username: "travel_mag", avatar: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3" }, hasUnviewed: true, type: "brand" },
+    { id: "story7", user: { name: "Food Network", username: "food_net", avatar: "https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3" }, hasUnviewed: true, type: "brand" }
   ]
   
   // Enhanced sample post data with more diversity
@@ -78,11 +78,11 @@ export default function Home() {
       author: {
         name: "Alex Johnson",
         username: "alex_j",
-        avatar: "/placeholder.svg?height=40&width=40&text=AJ",
+        avatar: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3",
       },
       content: {
         text: "Beautiful day at Malibu Beach! Perfect waves today 🌊 #summer #surfing #california",
-        image: "/placeholder.svg?height=600&width=600&text=Malibu+Beach",
+        image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1000&auto=format&fit=crop",
         aspectRatio: "square" as const,
       },
       likes: 324,
@@ -92,7 +92,7 @@ export default function Home() {
           author: {
             name: "Sarah Miller",
             username: "sarah_m",
-            avatar: "/placeholder.svg?height=40&width=40&text=SM",
+            avatar: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3",
           },
           content: "Looks amazing! Is that north or south Malibu?",
           timestamp: "2h ago",
@@ -102,7 +102,7 @@ export default function Home() {
           author: {
             name: "Mike Johnson",
             username: "mike_j",
-            avatar: "/placeholder.svg?height=40&width=40&text=MJ",
+            avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3",
           },
           content: "Perfect waves! I need to get out there this weekend!",
           timestamp: "1h ago",
@@ -117,11 +117,11 @@ export default function Home() {
       author: {
         name: "Emma Watson",
         username: "emma_official",
-        avatar: "/placeholder.svg?height=40&width=40&text=EW",
+        avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3",
       },
       content: {
         text: "Just finished reading this thought-provoking novel! Highly recommend it to everyone who loves psychological thrillers. The character development is incredible. #reading #books #thriller",
-        image: "/placeholder.svg?height=400&width=600&text=Book+Review",
+        image: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?q=80&w=1000&auto=format&fit=crop",
         aspectRatio: "video" as const,
       },
       likes: 15689,
@@ -131,7 +131,7 @@ export default function Home() {
           author: {
             name: "Alex Kim",
             username: "alex_k",
-            avatar: "/placeholder.svg?height=40&width=40&text=AK",
+            avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3",
           },
           content: "Adding this to my reading list immediately! I loved the author's previous work.",
           timestamp: "45m ago",
@@ -141,7 +141,7 @@ export default function Home() {
           author: {
             name: "BookWorm",
             username: "bookworm",
-            avatar: "/placeholder.svg?height=40&width=40&text=BW",
+            avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3",
           },
           content: "I'm halfway through it! That plot twist in chapter 7 was mind-blowing!",
           timestamp: "20m ago",
@@ -157,11 +157,11 @@ export default function Home() {
       author: {
         name: "Chef Mario",
         username: "chef_mario",
-        avatar: "/placeholder.svg?height=40&width=40&text=CM",
+        avatar: "https://images.unsplash.com/photo-1583394838336-acd977736f90?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3",
       },
       content: {
         text: "My secret pasta carbonara recipe! The key is using fresh farm eggs and high-quality guanciale. Who wants the full recipe? #cooking #italianfood #pasta",
-        image: "/placeholder.svg?height=600&width=600&text=Carbonara+Pasta",
+        image: "https://images.unsplash.com/photo-1546549032-9571cd6b27df?q=80&w=1000&auto=format&fit=crop",
         aspectRatio: "square" as const,
       },
       likes: 4582,
@@ -171,7 +171,7 @@ export default function Home() {
           author: {
             name: "Foodie Fan",
             username: "foodie123",
-            avatar: "/placeholder.svg?height=40&width=40&text=FF",
+            avatar: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3",
           },
           content: "Please share the recipe! Looks absolutely delicious!",
           timestamp: "30m ago",
@@ -186,11 +186,11 @@ export default function Home() {
       author: {
         name: "Travelista",
         username: "travel_mag",
-        avatar: "/placeholder.svg?height=40&width=40&text=TM",
+        avatar: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3",
       },
       content: {
         text: "Hidden gems of Santorini that most tourists never discover. The view from this secluded spot is absolutely breathtaking! #travel #greece #wanderlust",
-        image: "/placeholder.svg?height=600&width=800&text=Santorini+Greece",
+        image: "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?q=80&w=1000&auto=format&fit=crop",
         aspectRatio: "video" as const,
       },
       likes: 8721,
@@ -200,7 +200,7 @@ export default function Home() {
           author: {
             name: "Wanderer",
             username: "world_traveler",
-            avatar: "/placeholder.svg?height=40&width=40&text=WT",
+            avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3",
           },
           content: "Going to Santorini next month! Where exactly is this spot?",
           timestamp: "1h ago",
@@ -210,6 +210,65 @@ export default function Home() {
       location: "Santorini, Greece",
       isVerified: true,
       saves: 1543
+    },
+    {
+      id: "post5",
+      author: {
+        name: "Nature Explorer",
+        username: "nature_lover",
+        avatar: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3",
+      },
+      content: {
+        text: "Morning hike through the redwoods. The mist and sunlight created this magical scene. Nature is truly the best artist. #nature #hiking #forest #morninglight",
+        image: "https://images.unsplash.com/photo-1511497584788-876760111969?q=80&w=1000&auto=format&fit=crop",
+        aspectRatio: "square" as const,
+      },
+      likes: 3456,
+      comments: [
+        {
+          id: "comment7",
+          author: {
+            name: "Mountain Climber",
+            username: "peak_seeker",
+            avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3",
+          },
+          content: "The light filtering through the trees is breathtaking! Where is this?",
+          timestamp: "4h ago",
+        },
+      ],
+      timestamp: "10h ago",
+      location: "Redwood National Park",
+      saves: 678
+    },
+    {
+      id: "post6",
+      author: {
+        name: "Urban Photographer",
+        username: "city_shots",
+        avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3",
+      },
+      content: {
+        text: "City lights and urban geometry. Sometimes the most beautiful patterns are found in the chaos of city life. #urbanphotography #cityscape #nightphotography",
+        image: "https://images.unsplash.com/photo-1519501025264-65ba15a82390?q=80&w=1000&auto=format&fit=crop",
+        aspectRatio: "video" as const,
+      },
+      likes: 5892,
+      comments: [
+        {
+          id: "comment8",
+          author: {
+            name: "Architecture Buff",
+            username: "design_eye",
+            avatar: "https://images.unsplash.com/photo-1527980965255-d3b416303d12?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3",
+          },
+          content: "The composition here is just perfect. Love how you captured the light reflections!",
+          timestamp: "2h ago",
+        },
+      ],
+      timestamp: "1d ago",
+      location: "Downtown Chicago",
+      isVerified: true,
+      saves: 1023
     }
   ]
   
@@ -359,7 +418,7 @@ export default function Home() {
               <CardContent className="p-4">
                 <div className="flex items-center gap-3 mb-3">
                   <Avatar className="w-10 h-10">
-                    <AvatarImage src="/placeholder.svg?height=40&width=40" alt="Your profile" />
+                    <AvatarImage src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3" alt="Your profile" />
                     <AvatarFallback>YP</AvatarFallback>
                   </Avatar>
                   <div className="flex-1">
@@ -482,7 +541,7 @@ export default function Home() {
         <div className="flex flex-col items-center space-y-4">
           <div className="relative">
             <Avatar className="w-24 h-24">
-              <AvatarImage src="/placeholder.svg?height=96&width=96" alt="Your profile" />
+              <AvatarImage src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3" alt="Your profile" />
               <AvatarFallback>YP</AvatarFallback>
             </Avatar>
             <div className="absolute -top-2 -right-2 text-yellow-400">
