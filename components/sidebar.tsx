@@ -32,10 +32,10 @@ export default function Sidebar() {
   const navItems = [
     { name: "Safari", path: "/", icon: <Home className="mr-2 h-5 w-5" /> },
     { name: "Explore", path: "/explore", icon: <Compass className="mr-2 h-5 w-5" /> },
-    { name: "Messages", path: "/messages", icon: <MessageCircle className="mr-2 h-5 w-5" /> },
+    // { name: "Messages", path: "/messages", icon: <MessageCircle className="mr-2 h-5 w-5" /> },
     { name: "Friends", path: "/friends", icon: <Users className="mr-2 h-5 w-5" /> },
     // { name: "Crystal Ball", path: "/crystal-ball", icon: <Crystal className="mr-2 h-5 w-5" /> },
-    { name: "Notifications", path: "/activity", icon: <Bell className="mr-2 h-5 w-5" /> },
+    // { name: "Notifications", path: "/activity", icon: <Bell className="mr-2 h-5 w-5" /> },
     // { name: "Saved", path: "/saved", icon: <Bookmark className="mr-2 h-5 w-5" /> },
   ]
 

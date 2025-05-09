@@ -18,7 +18,7 @@ export default function MobileNav() {
     { path: "/", icon: <Home className="h-5 w-5" />, activeIcon: <Home className="h-5 w-5 fill-current" />, label: "Safari" },
     { path: "/explore", icon: <Compass className="h-5 w-5" />, activeIcon: <Compass className="h-5 w-5 fill-current" />, label: "Explore" },
     { path: "/create", icon: <Plus className="h-6 w-6" />, activeIcon: <Plus className="h-6 w-6" />, label: "Create", isSpecial: true },
-    { path: "/messages", icon: <MessageCircle className="h-5 w-5" />, activeIcon: <MessageCircle className="h-5 w-5 fill-current" />, label: "Messages" },
+    // { path: "/messages", icon: <MessageCircle className="h-5 w-5" />, activeIcon: <MessageCircle className="h-5 w-5 fill-current" />, label: "Messages" },
     {
       path: "/profile",
       icon: <User className="h-5 w-5" />,
