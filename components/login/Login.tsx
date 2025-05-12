@@ -104,6 +104,11 @@ export function Login() {
                 required
               />
             </div>
+            <div className="text-sm text-gray-500 p-2 bg-gray-100 rounded">
+              <p><strong>Demo Credentials:</strong></p>
+              <p>Username: <code className="bg-gray-200 px-1">testuser</code></p>
+              <p>Password: <code className="bg-gray-200 px-1">password123</code></p>
+            </div>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
             <Button 

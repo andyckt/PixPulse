@@ -34,6 +34,4 @@ export type {
 export type { 
   Comment, 
   PostComment 
-} from './commentService';
-
-export * from './auth.service'; 
+} from './commentService'; 
