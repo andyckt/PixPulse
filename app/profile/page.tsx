@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -34,6 +34,10 @@ import { ProfileGallery } from "@/components/profile-gallery"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { FollowersList } from "@/components/followers-list"
 import { PostDetailModal } from "@/components/post-detail-modal"
+import { useRouter } from "next/navigation"
+import { useAuth } from "@/contexts/AuthContext"
+import { ProfileInfo } from "@/components/profile"
+import { ProtectedRoute } from "@/components/auth"
 
 // Mock data for demonstration
 const PROFILE_DATA = {
@@ -258,12 +262,32 @@ const PROFILE_DATA = {
 }
 
 export default function ProfilePage() {
+  const { user, isAuthenticated, isLoading } = useAuth();
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState("posts")
   const [isFollowing, setIsFollowing] = useState(false)
-  const [followersDialogOpen, setFollowersDialogOpen] = useState(false)
-  const [followersInitialTab, setFollowersInitialTab] = useState("followers")
+  const [isFollowersOpen, setIsFollowersOpen] = useState(false)
+  const [isFollowingOpen, setIsFollowingOpen] = useState(false)
   const [selectedPost, setSelectedPost] = useState<any>(null)
   const [postDetailOpen, setPostDetailOpen] = useState(false)
+
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      router.push("/login");
+    }
+  }, [isLoading, isAuthenticated, router]);
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null; // This will prevent rendering while redirect happens
+  }
 
   const formatNumber = (num: number) => {
     if (num >= 1000000) {
@@ -296,247 +320,254 @@ export default function ProfilePage() {
   }
   
   const openFollowersDialog = (tab: "followers" | "following") => {
-    setFollowersInitialTab(tab);
-    setFollowersDialogOpen(true);
+    setIsFollowersOpen(true);
+    setIsFollowingOpen(tab === "following");
   }
 
   return (
-    <div className="flex min-h-screen bg-background">
-      {/* Left Sidebar */}
-      <Sidebar />
+    <ProtectedRoute>
+      <div className="container max-w-4xl py-8 px-4">
+        <h1 className="text-3xl font-bold mb-8 text-center">Your Profile</h1>
+        <ProfileInfo isCurrentUser={true} />
+        
+        <div className="flex min-h-screen bg-background">
+          {/* Left Sidebar */}
+          <Sidebar />
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col pb-16 md:pb-0">
-        <div className="max-w-4xl mx-auto w-full p-4">
-          {/* Profile Header */}
-          <div className="flex flex-col md:flex-row items-center md:items-start gap-8 mb-8">
-            <div className="relative">
-              <Avatar className="w-24 h-24 md:w-36 md:h-36 border-4 border-background shadow-md">
-                <AvatarImage src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=300&h=300&q=80&fit=crop" alt="John Doe profile" />
-                <AvatarFallback>JD</AvatarFallback>
-              </Avatar>
-              <Badge className="absolute -top-2 -right-2 px-2 py-1 bg-primary text-white">
-                <Award className="h-3 w-3 mr-1" />
-                Pro
-              </Badge>
-            </div>
+          {/* Main Content */}
+          <div className="flex-1 flex flex-col pb-16 md:pb-0">
+            <div className="max-w-4xl mx-auto w-full p-4">
+              {/* Profile Header */}
+              <div className="flex flex-col md:flex-row items-center md:items-start gap-8 mb-8">
+                <div className="relative">
+                  <Avatar className="w-24 h-24 md:w-36 md:h-36 border-4 border-background shadow-md">
+                    <AvatarImage src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=300&h=300&q=80&fit=crop" alt="John Doe profile" />
+                    <AvatarFallback>JD</AvatarFallback>
+                  </Avatar>
+                  <Badge className="absolute -top-2 -right-2 px-2 py-1 bg-primary text-white">
+                    <Award className="h-3 w-3 mr-1" />
+                    Pro
+                  </Badge>
+                </div>
 
-            <div className="flex-1 space-y-4 text-center md:text-left">
-              <div className="flex flex-col md:flex-row md:items-center gap-4">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h1 className="text-2xl font-bold">@{PROFILE_DATA.username}</h1>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <Hexagon className="h-5 w-5 text-blue-500 fill-blue-100" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Verified Account</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </div>
-                  <p className="text-muted-foreground">{PROFILE_DATA.name}</p>
-                </div>
-                <div className="flex gap-2 justify-center md:justify-start">
-                  <Button 
-                    variant={isFollowing ? "outline" : "default"}
-                    onClick={() => setIsFollowing(!isFollowing)}
-                  >
-                    {isFollowing ? "Following" : "Follow"}
-                  </Button>
-                  <Button variant="outline">Message</Button>
-                  <Link href="/profile/edit">
-                    <Button variant="outline" size="icon">
-                      <Edit3 className="h-5 w-5" />
-                      <span className="sr-only">Edit Profile</span>
-                    </Button>
-                  </Link>
-                  <Link href="/settings">
-                    <Button variant="outline" size="icon">
-                      <Settings className="h-5 w-5" />
-                      <span className="sr-only">Settings</span>
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-
-              <div className="flex justify-center md:justify-start gap-6">
-                <div className="text-center">
-                  <p className="font-bold">{formatNumber(PROFILE_DATA.stats.posts)}</p>
-                  <p className="text-sm text-muted-foreground">Posts</p>
-                </div>
-                <button 
-                  className="text-center hover:opacity-80 transition-opacity"
-                  onClick={() => openFollowersDialog("followers")}
-                >
-                  <p className="font-bold">{formatNumber(PROFILE_DATA.stats.followers)}</p>
-                  <p className="text-sm text-muted-foreground">Followers</p>
-                </button>
-                <button 
-                  className="text-center hover:opacity-80 transition-opacity"
-                  onClick={() => openFollowersDialog("following")}
-                >
-                  <p className="font-bold">{formatNumber(PROFILE_DATA.stats.following)}</p>
-                  <p className="text-sm text-muted-foreground">Following</p>
-                </button>
-                <div className="text-center">
-                  <p className="font-bold">{formatNumber(PROFILE_DATA.stats.likes)}</p>
-                  <p className="text-sm text-muted-foreground">Likes</p>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <p className="text-sm whitespace-pre-line">{PROFILE_DATA.bio}</p>
-                
-                <div className="flex flex-col gap-1 text-sm">
-                  {PROFILE_DATA.website && (
-                    <div className="flex items-center gap-2">
-                      <LinkIcon className="h-4 w-4 text-muted-foreground" />
-                      <a href={PROFILE_DATA.website} className="text-blue-500 hover:underline">{PROFILE_DATA.website.replace('https://', '')}</a>
-                    </div>
-                  )}
-                  {PROFILE_DATA.location && (
-                    <div className="flex items-center gap-2">
-                      <MapPin className="h-4 w-4 text-muted-foreground" />
-                      <span>{PROFILE_DATA.location}</span>
-                    </div>
-                  )}
-                  {PROFILE_DATA.work && (
-                    <div className="flex items-center gap-2">
-                      <Briefcase className="h-4 w-4 text-muted-foreground" />
-                      <span>{PROFILE_DATA.work}</span>
-                    </div>
-                  )}
-                  {PROFILE_DATA.joinDate && (
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-muted-foreground" />
-                      <span>{PROFILE_DATA.joinDate}</span>
-                    </div>
-                  )}
-                </div>
-                
-                <div className="flex flex-wrap gap-2 pt-1">
-                  {PROFILE_DATA.achievements.map((achievement, idx) => (
-                    <Badge key={idx} variant="secondary" className="px-2 py-1">
-                      <Award className="h-3 w-3 mr-1" />
-                      {achievement.title}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Story Highlights */}
-          <div className="mb-8">
-            <ScrollArea className="w-full whitespace-nowrap pb-4">
-              <div className="flex gap-4">
-                <div className="flex flex-col items-center gap-1">
-                  <div className="w-16 h-16 rounded-full border-2 border-dashed border-muted-foreground flex items-center justify-center">
-                    <Plus className="h-6 w-6 text-muted-foreground" />
-                  </div>
-                  <span className="text-xs">New</span>
-                </div>
-                
-                {PROFILE_DATA.highlights.map((highlight) => (
-                  <div key={highlight.id} className="flex flex-col items-center gap-1">
-                    <div className="w-16 h-16 rounded-full border-2 border-primary p-1">
-                      <div className="w-full h-full rounded-full overflow-hidden relative">
-                        <Image 
-                          src={highlight.cover}
-                          alt={highlight.title}
-                          fill
-                          className="object-cover"
-                        />
+                <div className="flex-1 space-y-4 text-center md:text-left">
+                  <div className="flex flex-col md:flex-row md:items-center gap-4">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h1 className="text-2xl font-bold">@{PROFILE_DATA.username}</h1>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger>
+                              <Hexagon className="h-5 w-5 text-blue-500 fill-blue-100" />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Verified Account</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                       </div>
+                      <p className="text-muted-foreground">{PROFILE_DATA.name}</p>
                     </div>
-                    <span className="text-xs">{highlight.title}</span>
+                    <div className="flex gap-2 justify-center md:justify-start">
+                      <Button 
+                        variant={isFollowing ? "outline" : "default"}
+                        onClick={() => setIsFollowing(!isFollowing)}
+                      >
+                        {isFollowing ? "Following" : "Follow"}
+                      </Button>
+                      <Button variant="outline">Message</Button>
+                      <Link href="/profile/edit">
+                        <Button variant="outline" size="icon">
+                          <Edit3 className="h-5 w-5" />
+                          <span className="sr-only">Edit Profile</span>
+                        </Button>
+                      </Link>
+                      <Link href="/settings">
+                        <Button variant="outline" size="icon">
+                          <Settings className="h-5 w-5" />
+                          <span className="sr-only">Settings</span>
+                        </Button>
+                      </Link>
+                    </div>
                   </div>
-                ))}
+
+                  <div className="flex justify-center md:justify-start gap-6">
+                    <div className="text-center">
+                      <p className="font-bold">{formatNumber(PROFILE_DATA.stats.posts)}</p>
+                      <p className="text-sm text-muted-foreground">Posts</p>
+                    </div>
+                    <button 
+                      className="text-center hover:opacity-80 transition-opacity"
+                      onClick={() => openFollowersDialog("followers")}
+                    >
+                      <p className="font-bold">{formatNumber(PROFILE_DATA.stats.followers)}</p>
+                      <p className="text-sm text-muted-foreground">Followers</p>
+                    </button>
+                    <button 
+                      className="text-center hover:opacity-80 transition-opacity"
+                      onClick={() => openFollowersDialog("following")}
+                    >
+                      <p className="font-bold">{formatNumber(PROFILE_DATA.stats.following)}</p>
+                      <p className="text-sm text-muted-foreground">Following</p>
+                    </button>
+                    <div className="text-center">
+                      <p className="font-bold">{formatNumber(PROFILE_DATA.stats.likes)}</p>
+                      <p className="text-sm text-muted-foreground">Likes</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <p className="text-sm whitespace-pre-line">{PROFILE_DATA.bio}</p>
+                    
+                    <div className="flex flex-col gap-1 text-sm">
+                      {PROFILE_DATA.website && (
+                        <div className="flex items-center gap-2">
+                          <LinkIcon className="h-4 w-4 text-muted-foreground" />
+                          <a href={PROFILE_DATA.website} className="text-blue-500 hover:underline">{PROFILE_DATA.website.replace('https://', '')}</a>
+                        </div>
+                      )}
+                      {PROFILE_DATA.location && (
+                        <div className="flex items-center gap-2">
+                          <MapPin className="h-4 w-4 text-muted-foreground" />
+                          <span>{PROFILE_DATA.location}</span>
+                        </div>
+                      )}
+                      {PROFILE_DATA.work && (
+                        <div className="flex items-center gap-2">
+                          <Briefcase className="h-4 w-4 text-muted-foreground" />
+                          <span>{PROFILE_DATA.work}</span>
+                        </div>
+                      )}
+                      {PROFILE_DATA.joinDate && (
+                        <div className="flex items-center gap-2">
+                          <Calendar className="h-4 w-4 text-muted-foreground" />
+                          <span>{PROFILE_DATA.joinDate}</span>
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      {PROFILE_DATA.achievements.map((achievement, idx) => (
+                        <Badge key={idx} variant="secondary" className="px-2 py-1">
+                          <Award className="h-3 w-3 mr-1" />
+                          {achievement.title}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               </div>
-            </ScrollArea>
+
+              {/* Story Highlights */}
+              <div className="mb-8">
+                <ScrollArea className="w-full whitespace-nowrap pb-4">
+                  <div className="flex gap-4">
+                    <div className="flex flex-col items-center gap-1">
+                      <div className="w-16 h-16 rounded-full border-2 border-dashed border-muted-foreground flex items-center justify-center">
+                        <Plus className="h-6 w-6 text-muted-foreground" />
+                      </div>
+                      <span className="text-xs">New</span>
+                    </div>
+                    
+                    {PROFILE_DATA.highlights.map((highlight) => (
+                      <div key={highlight.id} className="flex flex-col items-center gap-1">
+                        <div className="w-16 h-16 rounded-full border-2 border-primary p-1">
+                          <div className="w-full h-full rounded-full overflow-hidden relative">
+                            <Image 
+                              src={highlight.cover}
+                              alt={highlight.title}
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                        </div>
+                        <span className="text-xs">{highlight.title}</span>
+                      </div>
+                    ))}
+                  </div>
+                </ScrollArea>
+              </div>
+
+              {/* Profile Content */}
+              <Tabs defaultValue="posts" onValueChange={setActiveTab} className="w-full">
+                <TabsList className="grid grid-cols-3 w-full">
+                  <TabsTrigger value="posts">
+                    <Grid className="h-5 w-5 mr-2" />
+                    Posts
+                  </TabsTrigger>
+                  <TabsTrigger value="saved">
+                    <Bookmark className="h-5 w-5 mr-2" />
+                    Saved
+                  </TabsTrigger>
+                  <TabsTrigger value="tagged">
+                    <UserPlus className="h-5 w-5 mr-2" />
+                    Tagged
+                  </TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="posts" className="mt-6">
+                  <ProfileGallery 
+                    posts={PROFILE_DATA.posts} 
+                    onPostClick={handlePostClick}
+                    emptyMessage={{
+                      icon: <Grid className="h-16 w-16 mx-auto text-muted-foreground" />,
+                      title: "No posts yet",
+                      description: "When you share posts, they'll appear here."
+                    }}
+                  />
+                </TabsContent>
+
+                <TabsContent value="saved" className="mt-6">
+                  <ProfileGallery 
+                    posts={PROFILE_DATA.saved}
+                    onPostClick={handlePostClick} 
+                    emptyMessage={{
+                      icon: <Bookmark className="h-16 w-16 mx-auto text-muted-foreground" />,
+                      title: "No saved posts yet",
+                      description: "Posts you save will appear here."
+                    }}
+                  />
+                </TabsContent>
+
+                <TabsContent value="tagged" className="mt-6">
+                  <ProfileGallery 
+                    posts={PROFILE_DATA.tagged}
+                    onPostClick={handlePostClick}
+                    emptyMessage={{
+                      icon: <UserPlus className="h-16 w-16 mx-auto text-muted-foreground" />,
+                      title: "No tagged posts",
+                      description: "When people tag you in posts, they'll appear here."
+                    }}
+                  />
+                </TabsContent>
+              </Tabs>
+            </div>
           </div>
-
-          {/* Profile Content */}
-          <Tabs defaultValue="posts" onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid grid-cols-3 w-full">
-              <TabsTrigger value="posts">
-                <Grid className="h-5 w-5 mr-2" />
-                Posts
-              </TabsTrigger>
-              <TabsTrigger value="saved">
-                <Bookmark className="h-5 w-5 mr-2" />
-                Saved
-              </TabsTrigger>
-              <TabsTrigger value="tagged">
-                <UserPlus className="h-5 w-5 mr-2" />
-                Tagged
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="posts" className="mt-6">
-              <ProfileGallery 
-                posts={PROFILE_DATA.posts} 
-                onPostClick={handlePostClick}
-                emptyMessage={{
-                  icon: <Grid className="h-16 w-16 mx-auto text-muted-foreground" />,
-                  title: "No posts yet",
-                  description: "When you share posts, they'll appear here."
-                }}
-              />
-            </TabsContent>
-
-            <TabsContent value="saved" className="mt-6">
-              <ProfileGallery 
-                posts={PROFILE_DATA.saved}
-                onPostClick={handlePostClick} 
-                emptyMessage={{
-                  icon: <Bookmark className="h-16 w-16 mx-auto text-muted-foreground" />,
-                  title: "No saved posts yet",
-                  description: "Posts you save will appear here."
-                }}
-              />
-            </TabsContent>
-
-            <TabsContent value="tagged" className="mt-6">
-              <ProfileGallery 
-                posts={PROFILE_DATA.tagged}
-                onPostClick={handlePostClick}
-                emptyMessage={{
-                  icon: <UserPlus className="h-16 w-16 mx-auto text-muted-foreground" />,
-                  title: "No tagged posts",
-                  description: "When people tag you in posts, they'll appear here."
-                }}
-              />
-            </TabsContent>
-          </Tabs>
         </div>
+
+        {/* Followers/Following Dialog */}
+        <Dialog open={isFollowersOpen} onOpenChange={setIsFollowersOpen}>
+          <DialogContent className="sm:max-w-md p-0">
+            <FollowersList
+              followers={PROFILE_DATA.followersData}
+              following={PROFILE_DATA.followingData}
+              onClose={() => setIsFollowersOpen(false)}
+              onFollowToggle={handleFollowToggle}
+            />
+          </DialogContent>
+        </Dialog>
+
+        {/* Post Detail Modal */}
+        <PostDetailModal
+          post={selectedPost}
+          open={postDetailOpen}
+          onOpenChange={setPostDetailOpen}
+        />
+
+        {/* Mobile Bottom Navigation */}
+        <MobileNav />
       </div>
-
-      {/* Followers/Following Dialog */}
-      <Dialog open={followersDialogOpen} onOpenChange={setFollowersDialogOpen}>
-        <DialogContent className="sm:max-w-md p-0">
-          <FollowersList
-            followers={PROFILE_DATA.followersData}
-            following={PROFILE_DATA.followingData}
-            onClose={() => setFollowersDialogOpen(false)}
-            onFollowToggle={handleFollowToggle}
-          />
-        </DialogContent>
-      </Dialog>
-
-      {/* Post Detail Modal */}
-      <PostDetailModal
-        post={selectedPost}
-        open={postDetailOpen}
-        onOpenChange={setPostDetailOpen}
-      />
-
-      {/* Mobile Bottom Navigation */}
-      <MobileNav />
-    </div>
+    </ProtectedRoute>
   )
 }
 
