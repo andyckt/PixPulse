@@ -6,8 +6,7 @@ import type { Metadata } from "next"
 
 export const metadata: Metadata = {
   title: "PixPulse",
-  description: "An Instagram-like social media application",
-    generator: 'v0.dev'
+  description: "An Instagram-like social media application"
 }
 
 export default function RootLayout({
