@@ -22,7 +22,7 @@ export function Login() {
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated && !isLoading) {
-      router.push("/profile");
+      router.push("/");
     }
   }, [isAuthenticated, isLoading, router]);
 
@@ -33,7 +33,7 @@ export function Login() {
 
     try {
       await login(username, password);
-      router.push("/profile");
+      router.push("/");
     } catch (err: any) {
       console.error("Login error:", err);
       let errorMessage = "Failed to login. Please check your credentials.";

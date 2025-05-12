@@ -146,7 +146,7 @@ const authService = {
   // Logout user
   logout: () => {
     localStorage.removeItem('token');
-    // Redirect to login page or home page
+    // Redirect to homepage
     window.location.href = '/';
   },
   

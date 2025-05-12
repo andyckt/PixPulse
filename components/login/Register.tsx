@@ -25,7 +25,7 @@ export function Register() {
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated && !isLoading) {
-      router.push("/profile");
+      router.push("/");
     }
   }, [isAuthenticated, isLoading, router]);
 
@@ -43,7 +43,7 @@ export function Register() {
     try {
       // Match the backend API structure - admin is false by default for new users
       await register(username, email, password, phoneNo || undefined);
-      router.push("/profile");
+      router.push("/");
     } catch (err: any) {
       console.error("Registration error:", err);
       let errorMessage = "Failed to register. Please try again.";
