@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { authService, UserProfile as AuthUserProfile } from '@/services';
 
-// Extend the UserProfile type to include fields our UI needs
+// Define local interface for enhanced user profile
 interface UserProfile extends AuthUserProfile {
   profile_picture?: string;
   bio?: string;
@@ -44,8 +44,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (token) {
           try {
             const userData = await authService.getCurrentUser();
-            setUser(userData);
-            setIsAuthenticated(true);
+            if (userData) {
+              // Enhance the user data with UI-specific fields
+              const enhancedUser = {
+                ...userData,
+                profile_picture: undefined,
+                bio: undefined
+              } as UserProfile;
+              setUser(enhancedUser);
+              setIsAuthenticated(true);
+            }
           } catch (error) {
             console.error('Authentication error:', error);
             localStorage.removeItem('token');
@@ -55,16 +63,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     };
 
-    checkAuth();
+    // Wrap in try/catch to prevent unhandled errors
+    try {
+      checkAuth();
+    } catch (error) {
+      console.error("Error in auth check:", error);
+      setIsLoading(false);
+    }
   }, []);
 
   const login = async (username: string, password: string) => {
     setIsLoading(true);
     try {
       await authService.login({ username, password });
-      const userData = await authService.getCurrentUser();
-      setUser(userData);
-      setIsAuthenticated(true);
+      try {
+        const userData = await authService.getCurrentUser();
+        if (userData) {
+          // Enhance the user data with UI-specific fields
+          const enhancedUser = {
+            ...userData,
+            profile_picture: undefined,
+            bio: undefined
+          } as UserProfile;
+          setUser(enhancedUser);
+          setIsAuthenticated(true);
+        }
+      } catch (userError) {
+        console.error('Error fetching user data after login:', userError);
+        throw userError;
+      }
     } catch (error) {
       console.error('Login error:', error);
       throw error;
@@ -78,7 +105,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       await authService.register({ username, email, password, phone_no: phoneNo });
       // Automatically log in after registration
-      await login(username, password);
+      try {
+        await login(username, password);
+      } catch (loginError) {
+        console.error('Login failed after registration:', loginError);
+        throw loginError;
+      }
     } catch (error) {
       console.error('Registration error:', error);
       throw error;
@@ -88,9 +120,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const logout = () => {
-    authService.logout();
-    setUser(null);
-    setIsAuthenticated(false);
+    try {
+      authService.logout();
+      setUser(null);
+      setIsAuthenticated(false);
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
 
   return (
